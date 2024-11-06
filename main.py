@@ -37,7 +37,7 @@ def main():
             case "GameNumber":
                 print(menu.Colors.RED, "OK")
                 gamenumber_run()
-            case "bardefroshi":
+            case "BardeFroshi":
                 print(menu.Colors.RED, "OK")
                 bardefrosh_run()
             case _:
