@@ -3,13 +3,10 @@ import keyboard
 from pystyle import Center
 
 
-# Class definition for the menu colors
 class _Colors:
-    """Menu colors"""
 
     @staticmethod
     def _color_code(code):
-        """Static method to format color codes"""
         return f'\033[{code}m'
 
     ENDC: str = _color_code(0)
@@ -48,9 +45,7 @@ class _Colors:
     WHITEGREYBG: str = _color_code(107)
 
 
-# Class definition for the menu styles
 class _Styles:
-    """Menu styles"""
     DEFAULT: int = 1
     SELECTED: int = 2
     ARROW: int = 3
@@ -59,43 +54,14 @@ class _Styles:
     ARROWCENTERED: int = 33
 
 
-# Create instances of the classes
 Colors = _Colors()
 Styles = _Styles()
 
 
-# Class definition for the menu system
 class Menu:
-    """Menu system"""
 
-    def __init__(self,
-                 options: list = None,
-                 color: str = Colors.CYAN,
-                 style: int = Styles.DEFAULT,
-                 pretext: str = None):  # Use ANSI escape code for color
-        """
-
-        :options: list of menu options format: ["Option 1", "Option 2", "Option 3"]
-        :color: ANSI escape code for color format: Colors.CYAN
-        :style: menu style format: Styles.DEFAULT or Styles.SELECTED
-        or Styles.CENTERED or Styles.CENTEREDSELECTED
-        :pretext: text to display before the menu otherwise it will earesed
-        To get the selected option, use menu.selected or menu.selected_index
-
-
-        Example:
-        import menu
-        options = ["Option 1", "Option 2", "Option 3"]
-        my_menu = menu.Menu(options=options, style=menu.Styles.SELECTED)
-        User_choice = my_menu.launch(response="String") # can be "String" or "Index"
-        # There are two ways to get the selected option
-        # 1. Get the index of the selected option
-        print(my_menu.selected_index)
-        # 2. Get the string of the selected option
-        print(my_menu.selected)
-        # also you can get the index or string by using the variable User_choice
-        print(User_choice) # change response to "Index" or "String" to get the index or string
-        """
+    def __init__(self, options: list = None, color: str = Colors.CYAN, style: int = Styles.DEFAULT,
+                 pretext: str = None):
         self.pretext = str(pretext)
         self.style = style
         self.options = options
@@ -109,13 +75,10 @@ class Menu:
         self.last_known_index = 1
 
     def launch(self, response: str = "String"):
-
-        """Launch the menu
-        :response: Let user decide if menu should return index or string"""
         return self._create_menu(response)
 
     def _create_menu(self, response: str = "String"):
-        # Create a dictionary mapping index to menu options
+
         for index, option in enumerate(self.options):
             self.json[index] = option
 
@@ -135,27 +98,19 @@ class Menu:
         return self.selected_index
 
     def _up(self):
-        # Move the selection index up
+
         self.index = (self.index - 1) % self.index_max
 
     def _down(self):
-        # Move the selection index down
+
         self.index = (self.index + 1) % self.index_max
 
     def _enter(self):
-        # Set the selected option based on the current index
+
         self.selected = self.index
 
     def _style_parse_non_center(self):
-        """ Parse the style and display the menu
-        1 = default,
-        2 = > option < style
-        3 = ↳ option style
-        11 = 1 but with a centered title
-        22 = 2 but with a centered title
-        33 = 3 but with a centered title
-        """
-        # This if statement chain determines the style of the menu
+
         if self.style == 1:
             for i in range(self.index_max):
                 if i == self.index:
@@ -176,7 +131,6 @@ class Menu:
                     print(self.json[i])
 
     def _style_parse_center(self):
-        """ Parse the style and display the menu"""
         equaling_space = "         "
         if self.style == 11:
             for i in range(self.index_max):
@@ -188,7 +142,6 @@ class Menu:
         if self.style == 22:
             for i in range(self.index_max):
                 if i == self.index:
-                    # blank space for centering
                     sep = equaling_space + ">"
                     print(Center.XCenter(self.color + sep + self.json[i] + "<" + Colors.ENDC))
                 else:
@@ -202,14 +155,11 @@ class Menu:
                     print(Center.XCenter(self.json[i]))
 
     def _display(self):
-        # Initialize index and selected values
         self.index = 0
         self.selected = None
 
-        # Display the menu options with highlighting for the selected option
         while self.selected is None:
             if self.last_known_index != self.index:
-                # Update the screen with the current menu state
                 self.last_known_index = self.index
                 self.cls()
                 if self.pretext is not None:
@@ -219,17 +169,14 @@ class Menu:
                     else:
                         print(self.pretext)
                         self._style_parse_non_center()
-        # Set the selected value to the corresponding menu option
         self.selected = self.json[self.selected]
         self.selected_index = self.index
 
     def show_example(self):
-        """Show an example of each menu style"""
         for example_style in [1, 2, 3, 11, 22, 33]:
             options = ["Option 1", "Option 2", "Option 3"]
             Menu(options=options, style=example_style).launch()
 
     @staticmethod
     def cls():
-        """Clear the console screen"""
         os.system('cls' if os.name == 'nt' else 'printf "\033c"')
